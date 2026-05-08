@@ -1,6 +1,6 @@
 # SHIELD VPN — Desktop & Mobile Clients
 
-> Native VPN clients for macOS and Android with automatic geo-based split tunneling. No manual configuration required.
+> Native VPN clients for macOS, Windows, and Android with automatic geo-based split tunneling. No manual configuration required.
 
 **Private repository** — architecture overview below. Releases: [github.com/Skiba111/shield-releases](https://github.com/Skiba111/shield-releases)
 
@@ -8,68 +8,85 @@
 
 ## What makes it different
 
-Most VPN apps give you an on/off switch. SHIELD VPN automatically decides what traffic goes through the tunnel and what doesn't — based on destination IP geolocation — at the system network level. Users never think about it.
+Most VPN apps give you an on/off switch. SHIELD VPN automatically decides what traffic goes through the tunnel and what doesn't — based on destination IP geolocation — at the system network level. Users never need to configure anything.
 
 ---
 
-## macOS Client
+## macOS & Windows Client
 
 ### Tech Stack
+
 | Layer | Technology |
 |-------|-----------|
 | Runtime | Electron + Vite |
-| Language | TypeScript (~3,900 LOC) |
-| VPN protocol | VLESS + XTLS-Reality (via sing-box) |
-| Distribution | Homebrew tap + GitHub Releases |
+| Language | TypeScript |
+| VPN core | sing-box (VLESS + XTLS-Reality) |
+| Distribution | Homebrew tap (macOS) · GitHub Releases (macOS · Windows) |
 
 ### Split Tunneling — How it works
 
-The macOS client implements **automatic geo-based traffic routing at the system network layer**, not at the application layer.
+The desktop client implements **automatic geo-based traffic routing at the system network layer**, not at the application layer.
 
-**Standard VPN approach:** all traffic → tunnel. This breaks local services, slows everything down, and annoys users.
+**Standard VPN approach:** all traffic → tunnel. This breaks local services, slows browsing, and frustrates users.
 
 **SHIELD approach:**
-1. On connect, the client installs custom routing rules at the OS network level (not inside the app)
+1. On connect, the client installs custom routing rules directly at the OS network level
 2. A geo IP database is loaded into memory at startup
 3. Every outbound connection is intercepted before it leaves the network stack
-4. The destination IP is resolved against the geo database in microseconds
+4. The destination IP is looked up against the geo database in microseconds
 5. **Foreign IPs** → routed through the encrypted VPN tunnel
-6. **Local/domestic IPs** → bypass the tunnel, use the direct connection
+6. **Domestic IPs** → bypass the tunnel, use the direct connection
 
-This happens transparently. No per-app settings, no manual exclusion lists, no configuration. It works for every application on the system automatically.
+This is fully transparent. No per-app exclusion lists, no manual rules, no configuration. Every application on the system benefits automatically — browsers, messengers, games, IDEs.
 
 ### Additional features
-- System tray integration with connection status
-- Auto-reconnect on network change
-- Kill switch (drops traffic if VPN disconnects unexpectedly)
+
+- System tray integration with live connection status
+- Auto-reconnect on network change or connection drop
+- Kill switch — drops all traffic if the VPN disconnects unexpectedly
 - Auto-update via GitHub Releases
+- Minimal resource footprint
 
 ---
 
 ## Android Client
 
-Built on the **sing-box** stack — the same core engine used by production VPN infrastructure globally.
+Built on the **sing-box** stack — the same battle-tested engine used in production VPN infrastructure worldwide.
 
-- VLESS + XTLS-Reality protocol support
-- Geo-based routing rules (same logic as macOS, implemented via sing-box routing rules)
-- System-level VPN service integration (Android VpnService API)
+| Layer | Technology |
+|-------|-----------|
+| VPN core | sing-box |
+| Protocol | VLESS + XTLS-Reality |
+| Routing | Geo IP rule sets (same logic as desktop) |
+| System integration | Android VpnService API |
+
+- Automatic geo-based routing via sing-box rule sets
+- System-level VPN service (works across all apps)
+- Battery and network optimized
 
 ---
 
 ## Release History
 
-25+ releases shipped. Current stable: **v1.0.47** (macOS · Windows · Android)
+25+ releases shipped across all platforms. Current stable: **v1.0.47**
 
-See [shield-releases](https://github.com/Skiba111/shield-releases) for full changelog and download links.
+| Platform | Latest |
+|----------|--------|
+| macOS | v1.0.47 |
+| Windows | v1.0.47 |
+| Android | v1.0.26 |
+
+Full changelog: [shield-releases](https://github.com/Skiba111/shield-releases)
 
 ---
 
 ## Distribution
 
-**macOS (Homebrew):**
+**macOS — Homebrew:**
 ```bash
 brew tap Skiba111/shield
 brew install --cask shield-vpn
 ```
 
-**Windows / Android:** direct download via [shield-releases](https://github.com/Skiba111/shield-releases)
+**macOS / Windows / Android — direct download:**
+[github.com/Skiba111/shield-releases/releases/latest](https://github.com/Skiba111/shield-releases/releases/latest)
